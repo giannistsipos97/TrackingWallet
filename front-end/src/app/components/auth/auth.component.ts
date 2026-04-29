@@ -9,7 +9,6 @@ import { Router, RouterModule } from '@angular/router';
 @Component({
   selector: 'app-auth',
   standalone: true,
-  // Make sure to add the components here!
   imports: [CommonModule, RouterModule],
   templateUrl: './auth.component.html',
   styleUrl: './auth.component.scss',

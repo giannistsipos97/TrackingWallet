@@ -5,6 +5,7 @@ import { RegisterComponent } from './components/auth/register/register.component
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { authGuard, guestGuard } from './guards/auth.guard';
 import { AccountDetailsComponent } from './components/account-details/account-details.component';
+import { LayoutComponent } from './components/layout/layout.component';
 
 export const routes: Routes = [
   {
@@ -16,10 +17,13 @@ export const routes: Routes = [
     ],
   },
   {
-    path: 'dashboard',
-    component: DashboardComponent,
+    path: '',
+    component: LayoutComponent,
     canActivate: [authGuard],
+    children: [
+      { path: 'dashboard', component: DashboardComponent },
+      { path: 'account/:id', component: AccountDetailsComponent },
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+    ],
   },
-  { path: 'account/:id', component: AccountDetailsComponent },
-  { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
 ];
