@@ -1,5 +1,5 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AccountService } from '../../services/account.service';
 import { Account } from '../../models/Account';
 import { CommonModule, DecimalPipe } from '@angular/common';
@@ -12,6 +12,7 @@ import { Category } from '../../models/Category';
 import { TransactionService } from '../../services/transaction.service';
 import { ViewAllTransactionsComponent } from '../view-all-transactions/view-all-transactions.component';
 import { TransactionListComponent } from '../transaction-list/transaction-list.component';
+import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-account-details',
@@ -23,6 +24,7 @@ import { TransactionListComponent } from '../transaction-list/transaction-list.c
     EditTransactionComponent,
     ViewAllTransactionsComponent,
     TransactionListComponent,
+    ConfirmDialogComponent,
   ],
   templateUrl: './account-details.component.html',
   styleUrl: './account-details.component.scss',
@@ -32,7 +34,7 @@ export class AccountDetailsComponent implements OnInit {
   accountService = inject(AccountService);
   headerService = inject(HeaderService);
   categoriesService = inject(CategoryService);
-  transactionService = inject(TransactionService); // Assuming transactions are managed by AccountService for simplicity
+  transactionService = inject(TransactionService);
 
   account = signal<Account | null>(null);
   transactions = signal<Transaction[]>([]);
@@ -41,6 +43,8 @@ export class AccountDetailsComponent implements OnInit {
   editTransaction = signal<Transaction | null>(null);
   allCategories = signal<Category[]>([]);
   showAllTransactions = signal(false);
+  isDeleting = signal(false);
+  router = inject(Router);
 
   ngOnInit() {
     this.headerService.updateHeader(
@@ -94,5 +98,24 @@ export class AccountDetailsComponent implements OnInit {
     if (id) {
       this.loadDetails(id);
     }
+  }
+
+  onDeleteAccount() {
+    const currentAccount = this.account();
+
+    if (!currentAccount || !currentAccount._id) {
+      console.error('No account ID found to delete');
+      return;
+    }
+
+    this.accountService.deleteAccount(currentAccount._id).subscribe({
+      next: () => {
+        this.router.navigate(['/dashboard']);
+      },
+      error: (err) => {
+        console.error('Delete failed', err);
+        this.isDeleting.set(false);
+      },
+    });
   }
 }

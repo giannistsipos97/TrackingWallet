@@ -44,6 +44,9 @@ export class AccountService {
     });
   }
 
+  deleteAccount(id: string): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/${id}`);
+  }
   // Helper to get the current value without an async subscription
   get currentAccountsValue() {
     return this.accountsSubject.value;

@@ -50,11 +50,11 @@
           <div class="flex flex-col gap-3 w-full">
             <!-- Square Card -->
             <div
-              (click)="selectedAccount.set(account)"
+              (click)="
+                selectedAccount.set(account); viewAccountDetails(account._id!)
+              "
               [class]="account.color"
-              [class.ring-4]="selectedAccount()?._id === account._id"
-              (click)="viewAccountDetails(account._id!)"
-              class="account-card aspect-square p-4 sm:p-8 rounded-[1.8rem] sm:rounded-[2.5rem] text-white cursor-pointer transition-all duration-300 shadow-xl ring-emerald-500 ring-offset-4 dark:ring-offset-slate-900 flex flex-col justify-between relative overflow-hidden group hover:-translate-y-1 sm:hover:-translate-y-2"
+              class="account-card aspect-square p-4 sm:p-8 rounded-[1.8rem] sm:rounded-[2.5rem] text-white cursor-pointer transition-all duration-300 shadow-xl flex flex-col justify-between relative overflow-hidden group hover:-translate-y-1 sm:hover:-translate-y-2"
             >
               <div class="relative z-10">
                 <div class="flex justify-between items-start">

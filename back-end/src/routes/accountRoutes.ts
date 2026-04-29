@@ -62,4 +62,29 @@ router.put("/updateBalance/:id", async (req, res) => {
   }
 });
 
+// DELETE /api/accounts/:id
+router.delete("/:id", authMiddleware, async (req, res) => {
+  try {
+    const accountId = req.params.id;
+
+    const userId = req.user?.id;
+
+    if (!userId) {
+      return res.status(401).json({ message: "User not identified" });
+    }
+    await Transaction.deleteMany({ accountId: accountId });
+
+    await Account.findByIdAndDelete(accountId);
+
+    res.json({ message: "Account and all associated transactions deleted successfully" });
+  } catch (error: any) {
+    console.error("Error deleting account:", error);
+    // Temporary change for debugging:
+    res.status(500).json({
+      message: "Server error during deletion",
+      error: error.message,
+    });
+  }
+});
+
 export default router;
