@@ -140,6 +140,7 @@
       <app-edit-transaction
         [transaction]="editTransaction()"
         [categories]="allCategories()"
+        (delete)="handleUpdate($event)"
         (close)="editTransaction.set(null)"
         (save)="handleUpdate($event)"
       >

@@ -19,6 +19,14 @@
         >
           <i class="fa-solid fa-pen text-[10px]"></i>
         </button>
+
+        <button
+          (click)="isDeleting.set(true)"
+          type="button"
+          class="w-8 h-8 flex items-center justify-center rounded-xl border border-slate-200 dark:border-slate-700 text-slate-400 hover:text-red-500 transition-all active:scale-90"
+        >
+          <i class="fa-solid fa-trash-can text-[10px]"></i>
+        </button>
       </div>
       <button
         (click)="close.emit()"
@@ -134,3 +142,12 @@
     </form>
   </div>
 </div>
+
+@if (isDeleting()) {
+  <app-confirm-dialog
+    message="Permanently delete this transaction? This will also adjust your account balance."
+    (yes)="onDelete()"
+    (no)="isDeleting.set(false)"
+  >
+  </app-confirm-dialog>
+}

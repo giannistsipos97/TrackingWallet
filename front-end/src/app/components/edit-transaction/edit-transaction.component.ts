@@ -15,11 +15,12 @@ import {
   Validators,
 } from '@angular/forms';
 import { TransactionService } from '../../services/transaction.service';
+import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-edit-transaction',
   standalone: true,
-  imports: [ReactiveFormsModule, CommonModule],
+  imports: [ReactiveFormsModule, CommonModule, ConfirmDialogComponent],
   templateUrl: './edit-transaction.component.html',
   styleUrl: './edit-transaction.component.scss',
 })
@@ -31,8 +32,10 @@ export class EditTransactionComponent implements OnInit {
   @Input() categories: any[] = [];
   @Output() close = new EventEmitter<void>();
   @Output() save = new EventEmitter<any>();
+  @Output() delete = new EventEmitter<void>();
 
   isReadOnly = signal(true);
+  isDeleting = signal(false);
 
   editForm!: FormGroup;
 
@@ -78,5 +81,19 @@ export class EditTransactionComponent implements OnInit {
           this.save.emit(res);
         });
     }
+  }
+
+  onDelete() {
+    this.transactionService.deleteTransaction(this.transaction._id).subscribe({
+      next: (res) => {
+        this.isDeleting.set(false);
+        this.delete.emit(res);
+        this.close.emit();
+      },
+      error: (err) => {
+        console.error('Delete failed', err);
+        this.isDeleting.set(false);
+      },
+    });
   }
 }

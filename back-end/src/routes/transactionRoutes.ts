@@ -1,6 +1,7 @@
 import { Request, Response, Router } from "express";
 import { Transaction } from "../models/Transaction";
 import { Account } from "../models/Account";
+import { authMiddleware } from "../middleware/auth";
 
 const router = Router();
 
@@ -73,6 +74,34 @@ router.put("/:id", async (req: Request, res: Response) => {
   } catch (err: any) {
     console.error(err);
     res.status(400).json({ message: err.message });
+  }
+});
+
+// DELETE /api/transactions/:id
+router.delete("/:id", authMiddleware, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user.id;
+
+    const transaction = await Transaction.findOne({ _id: id, userId });
+
+    if (!transaction) {
+      return res.status(404).json({ message: "Transaction not found" });
+    }
+
+    const { accountId, amount, type } = transaction;
+
+    await Transaction.findByIdAndDelete(id);
+
+    const adjustment = type === "expense" ? amount : -amount;
+
+    await Account.findByIdAndUpdate(accountId, {
+      $inc: { balance: adjustment },
+    });
+
+    res.json({ message: "Transaction deleted and balance updated" });
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
   }
 });
 

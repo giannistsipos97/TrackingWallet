@@ -88,12 +88,10 @@ export class AccountDetailsComponent implements OnInit {
   handleUpdate(response: any) {
     this.editTransaction.set(null);
 
-    // Update account signal immediately from response to avoid a flicker
-    if (response.account) {
+    if (response?.account) {
       this.account.set(response.account);
     }
 
-    // Refresh everything to ensure summaries and lists are synced
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
       this.loadDetails(id);
