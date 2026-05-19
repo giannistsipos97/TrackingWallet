@@ -56,9 +56,9 @@ export class DashboardComponent implements OnInit {
   loadAccounts() {
     this.accountService.getAccounts().subscribe((accounts) => {
       this.accounts.set(accounts);
-      if (accounts.length > 0 && !this.selectedAccount()) {
-        this.selectedAccount.set(accounts[0]);
-      }
+      // if (accounts.length > 0 && !this.selectedAccount()) {
+      //   this.selectedAccount.set(accounts[0]);
+      // }
     });
   }
 
@@ -84,6 +84,11 @@ export class DashboardComponent implements OnInit {
 
   viewAccountDetails(id: string) {
     this.router.navigate(['/account', id]);
+  }
+
+  updateData() {
+    this.isModalOpen.set(false);
+    this.loadAccounts();
   }
 
   logout() {

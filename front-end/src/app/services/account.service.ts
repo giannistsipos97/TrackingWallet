@@ -23,7 +23,7 @@ export class AccountService {
   createAccount(accountData: Account): Observable<Account> {
     return this.http.post<Account>(this.apiUrl, accountData).pipe(
       tap(() => {
-        this.getAccounts().subscribe();
+        // this.getAccounts().subscribe();
       }),
     );
   }

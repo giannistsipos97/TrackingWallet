@@ -34,24 +34,24 @@ export class HeaderComponent implements OnInit {
   isDashboard = computed(() => this.router.url === '/dashboard');
 
   ngOnInit() {
-    // this.getUserProfile();
+    this.getUserProfile();
   }
 
-  // getUserProfile() {
-  //   this.authService.getUserProfile().subscribe({
-  //     next: (profile) => {
-  //       this.userProfile.set(profile);
+  getUserProfile() {
+    this.authService.getUserProfile().subscribe({
+      next: (profile) => {
+        this.userProfile.set(profile);
 
-  //       this.headerService.updateHeader('Welcome back,', profile.name);
+        this.headerService.updateHeader('Welcome back,', profile.name);
 
-  //       console.log('Profile loaded:', profile);
-  //     },
-  //     error: (err) => {
-  //       console.error('Error fetching profile:', err);
-  //       if (err.status === 401) this.authService.logout();
-  //     },
-  //   });
-  // }
+        console.log('Profile loaded:', profile);
+      },
+      error: (err) => {
+        console.error('Error fetching profile:', err);
+        if (err.status === 401) this.authService.logout();
+      },
+    });
+  }
 
   toggleTheme() {
     this.themeService.toggleTheme();

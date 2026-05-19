@@ -25,7 +25,8 @@ router.get("/:id", async (req, res) => {
     // 2. Fetch the actual transactions
     const transactions = await Transaction.find({ accountId: id })
       .populate("category") // Ensure categories are visible
-      .sort({ date: -1 });
+      .sort({ date: -1 })
+      .limit(5);
 
     const totals = await Transaction.aggregate([
       { $match: { accountId: new mongoose.Types.ObjectId(id) } },

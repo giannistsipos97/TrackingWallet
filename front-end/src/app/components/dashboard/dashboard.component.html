@@ -107,9 +107,7 @@
 
     <!-- Modals -->
     @if (isModalOpen()) {
-      <app-add-account-dialog
-        (close)="isModalOpen.set(false)"
-      ></app-add-account-dialog>
+      <app-add-account-dialog (close)="updateData()"> </app-add-account-dialog>
     }
 
     @if (transactionModalOpen() && transactionAccount()) {
