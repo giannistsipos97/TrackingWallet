@@ -6,6 +6,7 @@ import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { authGuard, guestGuard } from './guards/auth.guard';
 import { AccountDetailsComponent } from './components/account-details/account-details.component';
 import { LayoutComponent } from './components/layout/layout.component';
+import { AnalyticsComponent } from './components/analytics/analytics.component';
 
 export const routes: Routes = [
   {
@@ -22,6 +23,7 @@ export const routes: Routes = [
     canActivate: [authGuard],
     children: [
       { path: 'dashboard', component: DashboardComponent },
+      { path: 'analytics', component: AnalyticsComponent },
       { path: 'account/:id', component: AccountDetailsComponent },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
     ],
