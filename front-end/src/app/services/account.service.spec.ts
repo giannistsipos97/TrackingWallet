@@ -1,16 +1,33 @@
-/* tslint:disable:no-unused-variable */
-
-import { TestBed, inject } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
+import { provideHttpClient } from '@angular/common/http';
+import {
+  provideHttpClientTesting,
+  HttpTestingController,
+} from '@angular/common/http/testing';
 import { AccountService } from './account.service';
 
-describe('Service: Account', () => {
+describe('AccountService', () => {
+  let service: AccountService;
+  let httpMock: HttpTestingController;
+
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [AccountService],
+      providers: [
+        AccountService,
+        provideHttpClient(), // Core HTTP client support
+        provideHttpClientTesting(), // Gives us access to HttpTestingController to mock API calls
+      ],
     });
+
+    service = TestBed.inject(AccountService);
+    httpMock = TestBed.inject(HttpTestingController);
   });
 
-  it('should ...', inject([AccountService], (service: AccountService) => {
+  afterEach(() => {
+    httpMock.verify();
+  });
+
+  it('should create the account service instance cleanly', () => {
     expect(service).toBeTruthy();
-  }));
+  });
 });

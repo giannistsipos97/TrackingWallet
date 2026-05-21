@@ -1,7 +1,6 @@
 import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
 import { User } from '../../models/User';
-import { ThemeService } from '../../services/theme.service.spec';
 import { AccountService } from '../../services/account.service';
 import { CommonModule } from '@angular/common';
 import { Account } from '../../models/Account';
@@ -9,6 +8,7 @@ import { AddAccountDialogComponent } from '../add-account-dialog/add-account-dia
 import { AddTransactionDialogComponent } from '../add-transaction-dialog/add-transaction-dialog.component';
 import { Router } from '@angular/router';
 import { HeaderService } from '../../services/header.service';
+import { ThemeService } from '../../services/theme.service';
 
 @Component({
   selector: 'app-dashboard',
