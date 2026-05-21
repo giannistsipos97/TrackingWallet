@@ -13,6 +13,7 @@ import { TransactionService } from '../../services/transaction.service';
 import { ViewAllTransactionsComponent } from '../view-all-transactions/view-all-transactions.component';
 import { TransactionListComponent } from '../transaction-list/transaction-list.component';
 import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
+import { AddTransactionDialogComponent } from '../add-transaction-dialog/add-transaction-dialog.component';
 
 @Component({
   selector: 'app-account-details',
@@ -25,12 +26,14 @@ import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.compone
     ViewAllTransactionsComponent,
     TransactionListComponent,
     ConfirmDialogComponent,
+    AddTransactionDialogComponent,
   ],
   templateUrl: './account-details.component.html',
   styleUrl: './account-details.component.scss',
 })
 export class AccountDetailsComponent implements OnInit {
   route = inject(ActivatedRoute);
+  router = inject(Router);
   accountService = inject(AccountService);
   headerService = inject(HeaderService);
   categoriesService = inject(CategoryService);
@@ -44,7 +47,8 @@ export class AccountDetailsComponent implements OnInit {
   allCategories = signal<Category[]>([]);
   showAllTransactions = signal(false);
   isDeleting = signal(false);
-  router = inject(Router);
+  isAddModalOpen = signal<boolean>(false);
+  activeTransactionType = signal<'income' | 'expense'>('expense');
 
   ngOnInit() {
     this.headerService.updateHeader(
@@ -79,6 +83,16 @@ export class AccountDetailsComponent implements OnInit {
   handleBalanceUpdate(account: Account) {
     this.showEditModal.set(false);
     this.account.set(account);
+  }
+
+  openAddTransactionModal(type: 'income' | 'expense'): void {
+    this.activeTransactionType = signal<'income' | 'expense'>(type);
+    this.isAddModalOpen.set(true);
+  }
+
+  closeAddTransactionModal() {
+    this.isAddModalOpen.set(false);
+    this.loadDetails(this.account()!._id!);
   }
 
   openEditTransaction(transaction: any) {

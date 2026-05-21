@@ -30,8 +30,8 @@ export class AddTransactionDialogComponent implements OnInit {
 
   categories = signal<Category[]>([]);
 
-  @Input({ required: true }) account!: Account;
-  @Input({ required: true }) type: 'income' | 'expense' = 'expense';
+  @Input() account!: Account;
+  @Input() type: 'income' | 'expense' = 'expense';
   @Output() close = new EventEmitter<void>();
   @Output() transactionSuccess = new EventEmitter<Account>();
 
@@ -43,6 +43,10 @@ export class AddTransactionDialogComponent implements OnInit {
   });
 
   ngOnInit() {
+    if (!this.account) {
+      console.warn('No account context provided to AddTransactionDialog');
+      //this.account = this.accountService.getDefaultAccount();
+    }
     this.loadCategories();
   }
 
