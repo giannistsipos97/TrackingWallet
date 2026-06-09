@@ -8,7 +8,6 @@ import { AddAccountDialogComponent } from '../add-account-dialog/add-account-dia
 import { AddTransactionDialogComponent } from '../add-transaction-dialog/add-transaction-dialog.component';
 import { Router } from '@angular/router';
 import { HeaderService } from '../../services/header.service';
-import { ThemeService } from '../../services/theme.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -23,7 +22,6 @@ import { ThemeService } from '../../services/theme.service';
 })
 export class DashboardComponent implements OnInit {
   authService = inject(AuthService);
-  themeService = inject(ThemeService);
   accountService = inject(AccountService);
   router = inject(Router);
   headerService = inject(HeaderService);
@@ -93,9 +91,5 @@ export class DashboardComponent implements OnInit {
 
   logout() {
     this.authService.logout();
-  }
-
-  toggleTheme() {
-    this.themeService.toggleTheme();
   }
 }

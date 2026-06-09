@@ -1,1 +1,156 @@
-<p>analytics works!</p>
+<div
+  class="p-6 bg-slate-50 dark:bg-slate-900 min-h-full transition-colors duration-200"
+>
+  <div class="max-w-6xl mx-auto">
+    <div
+      class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8 pb-5 border-b border-slate-200 dark:border-slate-800"
+    >
+      <div>
+        <h2
+          class="text-2xl font-black tracking-tight text-slate-900 dark:text-white"
+        >
+          Financial Analytics
+        </h2>
+        <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">
+          Visual metrics and spending allocations for your accounts
+        </p>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-4">
+        <div class="flex flex-col sm:flex-row sm:items-center gap-2">
+          <label
+            for="accountSelect"
+            class="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500"
+          >
+            Account:
+          </label>
+          <div class="relative min-w-[200px]">
+            <select
+              id="accountSelect"
+              [ngModel]="selectedAccountId()"
+              (ngModelChange)="onAccountChange($event)"
+              class="w-full bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 text-sm font-bold rounded-xl pl-4 pr-10 py-2.5 shadow-sm border border-slate-200/60 dark:border-slate-700/80 hover:border-slate-300 dark:hover:border-slate-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 appearance-none cursor-pointer transition-all duration-200"
+            >
+              @for (acc of accounts(); track acc._id) {
+                <option
+                  [value]="acc._id"
+                  class="bg-white dark:bg-slate-800 py-2 font-medium"
+                >
+                  {{ acc.name }}
+                </option>
+              }
+            </select>
+
+            <div
+              class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 dark:text-slate-500"
+            >
+              <svg
+                class="h-4 w-4 stroke-current"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2.5"
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex flex-col sm:flex-row sm:items-center gap-2">
+          <label
+            for="monthSelect"
+            class="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500"
+          >
+            Period:
+          </label>
+          <div class="relative min-w-[160px]">
+            <select
+              id="monthSelect"
+              [ngModel]="selectedMonth()"
+              (ngModelChange)="selectedMonth.set($event)"
+              class="w-full bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 text-sm font-bold rounded-xl pl-4 pr-10 py-2.5 shadow-sm border border-slate-200/60 dark:border-slate-700/80 hover:border-slate-300 dark:hover:border-slate-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 appearance-none cursor-pointer transition-all duration-200"
+            >
+              @for (month of availableMonths(); track month) {
+                <option
+                  [value]="month"
+                  class="bg-white dark:bg-slate-800 py-2 font-medium"
+                >
+                  {{ formatMonthLabel(month) }}
+                </option>
+              }
+            </select>
+
+            <div
+              class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 dark:text-slate-500"
+            >
+              <svg
+                class="h-4 w-4 stroke-current"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2.5"
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div
+        class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700/50"
+      >
+        <div class="mb-4">
+          <h3 class="text-base font-bold text-slate-800 dark:text-slate-200">
+            Cash Flow Overview
+          </h3>
+          <p class="text-xs text-slate-400 dark:text-slate-500 mt-0.5">
+            Comparison between your total monthly earnings and cash outflows
+          </p>
+        </div>
+
+        <div class="relative h-72 w-full mt-2">
+          <canvas
+            baseChart
+            [data]="barChartData()"
+            [options]="barChartOptions"
+            [type]="'bar'"
+          >
+          </canvas>
+        </div>
+      </div>
+
+      <div
+        class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700/50"
+      >
+        <div class="mb-4">
+          <h3 class="text-base font-bold text-slate-800 dark:text-slate-200">
+            Expenses by Category
+          </h3>
+          <p class="text-xs text-slate-400 dark:text-slate-500 mt-0.5">
+            Percentage distributions of your recorded debit classifications
+          </p>
+        </div>
+
+        <div class="relative h-72 w-full mt-2">
+          <canvas
+            baseChart
+            [data]="donutChartData()"
+            [options]="donutChartOptions"
+            [type]="'doughnut'"
+          >
+          </canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

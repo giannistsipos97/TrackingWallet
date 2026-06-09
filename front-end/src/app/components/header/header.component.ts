@@ -43,8 +43,6 @@ export class HeaderComponent implements OnInit {
         this.userProfile.set(profile);
 
         this.headerService.updateHeader('Welcome back,', profile.name);
-
-        console.log('Profile loaded:', profile);
       },
       error: (err) => {
         console.error('Error fetching profile:', err);
