@@ -71,13 +71,19 @@ export class EditTransactionComponent implements OnInit {
     }
   }
 
+  setTransactionType(newType: 'income' | 'expense'): void {
+    if (this.isReadOnly()) return;
+
+    this.editForm.patchValue({ type: newType });
+    this.editForm.markAsDirty();
+  }
+
   onSave() {
     if (this.editForm.valid) {
       this.transactionService
         .updateTransaction(this.transaction._id, this.editForm.value)
         .subscribe((res) => {
           console.log('Transaction updated successfully:', res);
-
           this.save.emit(res);
         });
     }
