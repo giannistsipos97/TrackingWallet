@@ -10,7 +10,7 @@
     </div>
     <i
       class="fa-solid fa-chevron-down text-slate-400 text-xs transition-transform duration-200"
-      [class.rotate-180]="showCalendar()"
+      [ngClass]="{ 'rotate-180': showCalendar() }"
     ></i>
   </button>
 
@@ -56,13 +56,13 @@
             <button
               type="button"
               (click)="selectDay(day)"
-              [class.bg-slate-900]="isSelected(day)"
-              [class.text-white]="isSelected(day)"
-              [class.dark:bg-white]="isSelected(day)"
-              [class.dark:text-slate-900]="isSelected(day)"
-              [class.ring-2]="isToday(day) && !isSelected(day)"
-              [class.ring-inset]="isToday(day)"
-              [class.ring-slate-400]="isToday(day) && !isSelected(day)"
+              [ngClass]="{
+                'bg-slate-900 text-white dark:bg-white dark:text-slate-900':
+                  isSelected(day),
+                'ring-2 ring-inset ring-slate-400':
+                  isToday(day) && !isSelected(day),
+                'ring-inset': isToday(day) && isSelected(day),
+              }"
               class="py-2 text-xs font-bold rounded-xl transition-all hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300"
             >
               {{ day }}

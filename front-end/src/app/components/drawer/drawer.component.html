@@ -6,8 +6,10 @@
 }
 
 <aside
-  [class.translate-x-0]="headerService.isDrawerOpen()"
-  [class.-translate-x-full]="!headerService.isDrawerOpen()"
+  [ngClass]="{
+    'translate-x-0': headerService.isDrawerOpen(),
+    '-translate-x-full': !headerService.isDrawerOpen(),
+  }"
   class="fixed top-0 left-0 h-full w-72 bg-white dark:bg-slate-800 shadow-2xl z-[70] transition-transform duration-300 ease-in-out border-r border-slate-100 dark:border-slate-700 p-6"
 >
   <div class="flex items-center justify-between mb-8">

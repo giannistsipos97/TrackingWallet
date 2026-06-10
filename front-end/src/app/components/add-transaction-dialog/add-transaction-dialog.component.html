@@ -69,8 +69,10 @@
             formControlName="amount"
             step="0.01"
             class="w-full bg-slate-50 dark:bg-slate-900 border-none rounded-2xl p-5 pl-10 text-2xl font-black dark:text-white focus:ring-2 transition-all"
-            [class.focus:ring-emerald-500]="type === 'income'"
-            [class.focus:ring-rose-500]="type === 'expense'"
+            [ngClass]="{
+              'focus:ring-emerald-500': type === 'income',
+              'focus:ring-rose-500': type === 'expense',
+            }"
           />
         </div>
       </div>
@@ -106,7 +108,7 @@
         >
         <select
           formControlName="category"
-          class="w-full bg-slate-50 dark:bg-slate-900 border-none rounded-2xl p-4 dark:text-white focus:ring-2 focus:ring-slate-400 transition-all"
+          class="w-full bg-slate-50 dark:bg-slate-900 border-none rounded-2xl p-4 dark:text-white focus:ring-2 focus:ring-slate-400 transition-all cursor-pointer"
         >
           <option [ngValue]="null" disabled>Select Category</option>
           @for (category of categories(); track category._id) {
@@ -129,9 +131,11 @@
         <button
           type="submit"
           [disabled]="transactionForm.invalid"
-          class="flex-1 text-white py-4 rounded-2xl font-bold shadow-lg transition-all active:scale-95 disabled:opacity-50"
-          [class.bg-emerald-500]="type === 'income'"
-          [class.bg-rose-500]="type === 'expense'"
+          class="flex-1 text-white py-4 rounded-2xl font-bold shadow-lg transition-all active:scale-95 disabled:opacity-50 cursor-pointer"
+          [ngClass]="{
+            'bg-emerald-500 shadow-emerald-500/20': type === 'income',
+            'bg-rose-500 shadow-rose-500/20': type === 'expense',
+          }"
         >
           Confirm
         </button>

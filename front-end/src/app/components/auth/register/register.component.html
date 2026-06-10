@@ -16,7 +16,7 @@
         type="text"
         [ngModel]="username()"
         (ngModelChange)="username.set($event); touched().username = true"
-        [class.border-red-500]="touched().username && !username()"
+        [ngClass]="{ 'border-red-500': touched().username && !username() }"
         class="w-full p-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl focus:ring-2 focus:ring-indigo-500 outline-none dark:text-white transition-all"
       />
       @if (touched().username && !username()) {
@@ -35,7 +35,7 @@
         type="email"
         [ngModel]="email()"
         (ngModelChange)="email.set($event); touched().email = true"
-        [class.border-red-500]="touched().email && !isEmailValid()"
+        [ngClass]="{ 'border-red-500': touched().email && !isEmailValid() }"
         class="w-full p-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl focus:ring-2 focus:ring-indigo-500 outline-none dark:text-white transition-all"
       />
       @if (touched().email && !isEmailValid()) {
@@ -54,7 +54,9 @@
         type="password"
         [ngModel]="password()"
         (ngModelChange)="password.set($event); touched().password = true"
-        [class.border-red-500]="touched().password && !isPasswordValid()"
+        [ngClass]="{
+          'border-red-500': touched().password && !isPasswordValid(),
+        }"
         class="w-full p-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl focus:ring-2 focus:ring-indigo-500 outline-none dark:text-white transition-all"
       />
       @if (touched().password && !isPasswordValid()) {
@@ -73,7 +75,7 @@
         type="password"
         [ngModel]="confirmPassword()"
         (ngModelChange)="confirmPassword.set($event); touched().confirm = true"
-        [class.border-red-500]="touched().confirm && !passwordsMatch()"
+        [ngClass]="{ 'border-red-500': touched().confirm && !passwordsMatch() }"
         class="w-full p-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl focus:ring-2 focus:ring-indigo-500 outline-none dark:text-white transition-all"
       />
       @if (touched().confirm && !passwordsMatch()) {
