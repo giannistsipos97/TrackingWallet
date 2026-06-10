@@ -15,11 +15,12 @@ import { Category } from '../../models/Category';
 import { Transaction } from '../../models/Transaction';
 import { TransactionService } from '../../services/transaction.service';
 import { AuthService } from '../../services/auth.service';
+import { CustomDatePickerComponent } from '../custom-date-picker/custom-date-picker.component';
 
 @Component({
   selector: 'app-add-transaction-dialog',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, CustomDatePickerComponent],
   templateUrl: './add-transaction-dialog.component.html',
 })
 export class AddTransactionDialogComponent implements OnInit {
@@ -38,7 +39,7 @@ export class AddTransactionDialogComponent implements OnInit {
   transactionForm = this.fb.group({
     amount: [null, [Validators.required, Validators.min(0.01)]],
     description: ['', [Validators.required, Validators.minLength(3)]],
-    category: ['General', Validators.required],
+    category: [null as Category | null, Validators.required],
     date: [new Date().toISOString().substring(0, 10), Validators.required],
   });
 

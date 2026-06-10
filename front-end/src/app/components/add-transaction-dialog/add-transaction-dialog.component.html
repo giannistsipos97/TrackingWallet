@@ -55,7 +55,7 @@
       <!-- Amount Input -->
       <div class="space-y-2">
         <label
-          class="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400"
+          class="text-[12px] font-bold uppercase tracking-[0.2em] dark:text-slate-400 text-black"
           >Amount</label
         >
         <div class="relative">
@@ -78,7 +78,7 @@
       <!-- Description -->
       <div class="space-y-2">
         <label
-          class="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400"
+          class="text-[12px] font-bold uppercase tracking-[0.2em] dark:text-slate-400 text-black"
           >Description</label
         >
         <input
@@ -89,10 +89,19 @@
         />
       </div>
 
+      <div class="space-y-2">
+        <label
+          class="text-[12px] font-bold uppercase tracking-[0.2em] dark:text-slate-400 text-black"
+        >
+          Transaction Date
+        </label>
+        <app-custom-date-picker formControlName="date"></app-custom-date-picker>
+      </div>
+
       <!-- Category Picker -->
       <div class="space-y-2">
         <label
-          class="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400"
+          class="text-[12px] font-bold uppercase tracking-[0.2em] dark:text-slate-400 text-black"
           >Category</label
         >
         <select
