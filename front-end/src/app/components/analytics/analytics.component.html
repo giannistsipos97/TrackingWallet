@@ -40,7 +40,32 @@
                 </option>
               }
             </select>
+          </div>
+        </div>
 
+        <div class="flex flex-col sm:flex-row sm:items-center gap-2">
+          <label
+            for="yearSelect"
+            class="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500"
+          >
+            Year:
+          </label>
+          <div class="relative min-w-[100px]">
+            <select
+              id="yearSelect"
+              [ngModel]="selectedYear()"
+              (ngModelChange)="selectedYear.set($event)"
+              class="w-full bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 text-sm font-bold rounded-xl pl-4 pr-10 py-2.5 shadow-sm border border-slate-200/60 dark:border-slate-700/80 hover:border-slate-300 dark:hover:border-slate-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 appearance-none cursor-pointer transition-all duration-200"
+            >
+              @for (year of availableYears(); track year) {
+                <option
+                  [value]="year"
+                  class="bg-white dark:bg-slate-800 py-2 font-medium"
+                >
+                  {{ year }}
+                </option>
+              }
+            </select>
             <div
               class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 dark:text-slate-500"
             >
@@ -65,13 +90,13 @@
             for="monthSelect"
             class="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500"
           >
-            Period:
+            Month:
           </label>
           <div class="relative min-w-[160px]">
             <select
               id="monthSelect"
-              [ngModel]="selectedMonth()"
-              (ngModelChange)="selectedMonth.set($event)"
+              [ngModel]="activePeriod()"
+              (ngModelChange)="selectedMonth.set($event.split('-')[1])"
               class="w-full bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 text-sm font-bold rounded-xl pl-4 pr-10 py-2.5 shadow-sm border border-slate-200/60 dark:border-slate-700/80 hover:border-slate-300 dark:hover:border-slate-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 appearance-none cursor-pointer transition-all duration-200"
             >
               @for (month of availableMonths(); track month) {
@@ -83,7 +108,6 @@
                 </option>
               }
             </select>
-
             <div
               class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 dark:text-slate-500"
             >
@@ -117,15 +141,13 @@
             Comparison between your total monthly earnings and cash outflows
           </p>
         </div>
-
         <div class="relative h-72 w-full mt-2">
           <canvas
             baseChart
             [data]="barChartData()"
             [options]="barChartOptions"
             [type]="'bar'"
-          >
-          </canvas>
+          ></canvas>
         </div>
       </div>
 
@@ -140,15 +162,13 @@
             Percentage distributions of your recorded debit classifications
           </p>
         </div>
-
         <div class="relative h-72 w-full mt-2">
           <canvas
             baseChart
             [data]="donutChartData()"
             [options]="donutChartOptions"
             [type]="'doughnut'"
-          >
-          </canvas>
+          ></canvas>
         </div>
       </div>
     </div>

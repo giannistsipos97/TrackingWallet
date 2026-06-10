@@ -3,7 +3,6 @@ import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ChartData } from 'chart.js';
 import { FormsModule } from '@angular/forms';
 import { Chart, registerables } from 'chart.js';
-import { TransactionService } from '../../services/transaction.service';
 import { Transaction } from '../../models/Transaction';
 import { Account } from '../../models/Account';
 import { AccountService } from '../../services/account.service';
@@ -18,23 +17,45 @@ Chart.register(...registerables);
   styleUrls: ['./analytics.component.scss'],
 })
 export class AnalyticsComponent implements OnInit {
-  private transactionService = inject(TransactionService);
   private accountService = inject(AccountService);
 
   transactions = signal<Transaction[]>([]);
   accounts = signal<Account[]>([]);
   selectedAccount = signal<Account | null>(null);
   selectedAccountId = signal<string>('');
-
+  selectedYear = signal<string>(new Date().getFullYear().toString()); // Defaults to current year
   selectedMonth = signal<string>(
-    (() => {
-      const today = new Date();
-      return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
-    })(),
+    String(new Date().getMonth() + 1).padStart(2, '0'),
   );
 
-  // Mock available months list for dropdown options
-  availableMonths = signal<string[]>(['2026-06', '2026-05', '2026-04']);
+  activePeriod = computed(
+    () => `${this.selectedYear()}-${this.selectedMonth()}`,
+  );
+
+  availableMonths = computed<string[]>(() => {
+    const year = this.selectedYear();
+    const months: string[] = [];
+
+    for (let m = 1; m <= 12; m++) {
+      months.push(`${year}-${String(m).padStart(2, '0')}`);
+    }
+
+    return months;
+  });
+
+  availableYears = computed<string[]>(() => {
+    const yearsSet = new Set<string>();
+
+    this.transactions().forEach((t) => {
+      if (t.date) {
+        yearsSet.add(t.date.substring(0, 4)); // Extracts 'YYYY'
+      }
+    });
+
+    yearsSet.add(new Date().getFullYear().toString());
+
+    return Array.from(yearsSet).sort().reverse();
+  });
 
   formatMonthLabel(monthStr: string): string {
     const [year, month] = monthStr.split('-');
@@ -53,9 +74,7 @@ export class AnalyticsComponent implements OnInit {
 
         if (fetchedAccounts.length > 0 && !this.selectedAccountId()) {
           const firstAccountId = fetchedAccounts[0]._id ?? '';
-
           this.selectedAccountId.set(firstAccountId);
-
           this.getAccountTransactions(firstAccountId);
         }
       },
@@ -67,7 +86,6 @@ export class AnalyticsComponent implements OnInit {
 
   onAccountChange(newAccountId: string): void {
     this.selectedAccountId.set(newAccountId);
-
     if (newAccountId.trim() !== '') {
       this.getAccountTransactions(newAccountId);
     }
@@ -78,6 +96,7 @@ export class AnalyticsComponent implements OnInit {
       next: (data) => {
         this.selectedAccount.set(data.account);
         this.transactions.set(data.transactions);
+        console.log(this.transactions());
       },
       error: (err) => {
         console.error(`Failed to load account data for ${accountId}:`, err);
@@ -85,10 +104,16 @@ export class AnalyticsComponent implements OnInit {
     });
   }
 
-  // =========================================================
-  // 📊 MOCKUP CHART CONFIGURATIONS (Chart.js Objects)
-  // =========================================================
+  filteredTransactions = computed(() => {
+    const currentPeriod = this.activePeriod();
+    return this.transactions().filter(
+      (t) => t.date && t.date.startsWith(currentPeriod),
+    );
+  });
 
+  // =========================================================
+  // 📊 REAL-DATA BAR CHART CONFIGURATIONS
+  // =========================================================
   barChartOptions: ChartConfiguration<'bar'>['options'] = {
     responsive: true,
     maintainAspectRatio: false,
@@ -96,33 +121,41 @@ export class AnalyticsComponent implements OnInit {
       legend: { position: 'top', labels: { font: { weight: 'bold' } } },
     },
     scales: {
-      y: { grid: { color: 'rgba(148, 163, 184, 0.1)' } },
+      y: { beginAtZero: true, grid: { color: 'rgba(148, 163, 184, 0.1)' } },
       x: { grid: { display: false } },
     },
   };
 
   barChartData = computed<ChartData<'bar'>>(() => {
+    let totalIncome = 0;
+    let totalExpense = 0;
+
+    this.filteredTransactions().forEach((t) => {
+      if (t.type === 'income') totalIncome += t.amount;
+      if (t.type === 'expense') totalExpense += t.amount;
+    });
+
     return {
-      labels: ['June 2026'],
+      labels: [this.formatMonthLabel(this.activePeriod())],
       datasets: [
         {
-          data: [2150],
+          data: [totalIncome],
           label: 'Income',
           backgroundColor: '#10b981',
           borderRadius: 6,
-        }, // Emerald Green
+        },
         {
-          data: [700],
+          data: [totalExpense],
           label: 'Expenses',
           backgroundColor: '#f43f5e',
           borderRadius: 6,
-        }, // Rose Red
+        },
       ],
     };
   });
 
   // =========================================================
-  // 📊 DONUT CHART CONFIGURATIONS (Chart.js Objects)
+  // 📊 REAL-DATA DONUT CHART CONFIGURATIONS
   // =========================================================
   donutChartOptions: ChartConfiguration<'doughnut'>['options'] = {
     responsive: true,
@@ -133,16 +166,36 @@ export class AnalyticsComponent implements OnInit {
         labels: { boxWidth: 12, padding: 16, font: { size: 12 } },
       },
     },
-    cutout: '70%', // Makes the inner donut ring look ultra-modern and slim
+    cutout: '70%',
   };
 
   donutChartData = computed<ChartData<'doughnut'>>(() => {
+    const categoryTotals: { [key: string]: number } = {};
+
+    this.filteredTransactions()
+      .filter((t) => t.type === 'expense')
+      .forEach((t) => {
+        const categoryName = t.category?.name || 'Other';
+        categoryTotals[categoryName] =
+          (categoryTotals[categoryName] || 0) + t.amount;
+      });
+
+    const labels = Object.keys(categoryTotals);
+    const dataValues = Object.values(categoryTotals);
+
     return {
-      labels: ['Rent', 'Food', 'Transport', 'Entertainment'],
+      labels: labels.length > 0 ? labels : ['No Expenses'],
       datasets: [
         {
-          data: [450, 120, 45, 85],
-          backgroundColor: ['#3b82f6', '#f59e0b', '#10b981', '#8b5cf6'], // Blue, Amber, Emerald, Purple
+          data: dataValues.length > 0 ? dataValues : [0],
+          backgroundColor: [
+            '#3b82f6',
+            '#f59e0b',
+            '#10b981',
+            '#8b5cf6',
+            '#ec4899',
+            '#64748b',
+          ],
           borderWidth: 0,
         },
       ],
