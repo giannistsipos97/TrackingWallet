@@ -72,14 +72,6 @@ export class AccountDetailsComponent implements OnInit {
     });
   }
 
-  // loadTransactions(accountId: string) {
-  //   this.transactionService
-  //     .getAccountTransactions(accountId)
-  //     .subscribe((transactions) => {
-  //       this.transactions.set(transactions);
-  //     });
-  // }
-
   handleBalanceUpdate(account: Account) {
     this.showEditModal.set(false);
     this.account.set(account);
