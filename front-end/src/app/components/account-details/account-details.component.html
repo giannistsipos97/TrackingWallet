@@ -149,7 +149,7 @@
 
     @if (showAllTransactions()) {
       <app-view-all-transactions
-        [transactions]="transactions()"
+        [accountId]="account()?._id!"
         (close)="showAllTransactions.set(false)"
         (editTransaction)="openEditTransaction($event)"
       >

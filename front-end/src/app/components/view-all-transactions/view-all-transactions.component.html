@@ -1,33 +1,63 @@
 <div
-  class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[90] flex items-center justify-center p-4"
+  class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[90] flex items-center justify-center p-4 animate-in fade-in duration-200"
 >
   <div
-    class="bg-white dark:bg-slate-800 w-full max-w-2xl h-[80vh] rounded-[2.5rem] flex flex-col shadow-2xl border border-slate-100 dark:border-slate-700"
+    class="bg-white dark:bg-slate-800 w-full max-w-2xl h-[80vh] rounded-[2.5rem] flex flex-col shadow-2xl border border-slate-100 dark:border-slate-700 overflow-hidden"
   >
-    <div class="p-8 pb-4 flex items-center justify-between">
-      <div>
-        <h3 class="text-2xl font-black text-slate-900 dark:text-white">
-          Full History
-        </h3>
-        <p class="text-sm text-slate-500">
-          {{ transactions.length }} total transactions
-        </p>
+    <div class="p-8 pb-4 flex items-center justify-between gap-4">
+      <div
+        class="flex-1 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+      >
+        <div>
+          <h3 class="text-2xl font-black text-slate-900 dark:text-white">
+            Full History
+          </h3>
+          <p class="text-sm text-slate-500">
+            {{ transactions().length }} transactions found
+          </p>
+        </div>
+
+        <div class="w-full sm:w-48">
+          <select
+            [ngModel]="selectedMonthSelection()"
+            (ngModelChange)="
+              selectedMonthSelection.set($event); onMonthChange()
+            "
+            class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl p-2.5 text-xs font-bold text-slate-700 dark:text-white focus:ring-2 focus:ring-emerald-500 outline-none transition-all cursor-pointer shadow-sm"
+          >
+            @for (option of monthOptions; track option.label) {
+              <option [ngValue]="option">{{ option.label }}</option>
+            }
+          </select>
+        </div>
       </div>
+
       <button
         (click)="close.emit()"
-        class="w-10 h-10 flex items-center justify-center bg-slate-100 dark:bg-slate-700 rounded-full text-slate-500"
+        class="w-10 h-10 flex-shrink-0 flex items-center justify-center bg-slate-100 dark:bg-slate-700 rounded-full text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors"
       >
         <i class="fa-solid fa-xmark text-lg"></i>
       </button>
     </div>
 
     <div class="flex-1 overflow-y-auto pb-8 custom-scrollbar">
-      <div class="flex-1 overflow-y-auto px-4 pb-8">
-        <app-transaction-list
-          [transactions]="transactions"
-          (edit)="onEdit($event)"
-        >
-        </app-transaction-list>
+      <div class="px-4">
+        @if (!isLoading()) {
+          <app-transaction-list
+            [transactions]="transactions()"
+            (edit)="onEdit($event)"
+          >
+          </app-transaction-list>
+        } @else {
+          <div
+            class="p-20 text-center text-xs font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500 animate-pulse"
+          >
+            <i
+              class="fa-solid fa-spinner fa-spin mr-2 text-emerald-500 text-sm"
+            ></i>
+            Fetching ledger records...
+          </div>
+        }
       </div>
     </div>
   </div>

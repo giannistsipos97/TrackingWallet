@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Transaction } from '../models/Transaction';
 import { Account } from '../models/Account';
@@ -22,6 +22,19 @@ export class TransactionService {
 
   getAccountTransactions(accountId: string): Observable<Transaction[]> {
     return this.http.get<Transaction[]>(`${this.apiUrl}/account/${accountId}`);
+  }
+
+  getTransactions(
+    accountId: string,
+    month: number,
+    year: number,
+  ): Observable<any[]> {
+    const params = new HttpParams()
+      .set('accountId', accountId)
+      .set('month', month.toString())
+      .set('year', year.toString());
+
+    return this.http.get<any[]>(this.apiUrl, { params });
   }
 
   updateTransaction(id: string, data: any): Observable<any> {
