@@ -5,6 +5,43 @@ import { authMiddleware } from "../middleware/auth";
 
 const router = Router();
 
+// GET /api/transactions
+router.get("/", async (req: Request, res: Response) => {
+  try {
+    const accountId = req.query.accountId as string;
+
+    // Base filter object
+    const query: any = {};
+    if (accountId) query.accountId = accountId;
+
+    // Date Range Filtering parameters
+    const yearParam = req.query.year as string;
+    const monthParam = req.query.month as string;
+
+    if (yearParam && monthParam) {
+      const year = parseInt(yearParam);
+      const month = parseInt(monthParam);
+
+      // Boundary match matching full month span range blocks
+      const startDate = new Date(year, month, 1);
+      const endDate = new Date(year, month + 1, 1);
+
+      query.date = {
+        $gte: startDate,
+        $lt: endDate,
+      };
+    }
+
+    //Simply fetch all matching transactions sorted by date
+    const transactions = await Transaction.find(query).sort({ date: -1 }).populate("category");
+
+    res.json(transactions);
+  } catch (err: any) {
+    console.error(err);
+    res.status(500).json({ message: "Server error while fetching ledger entries." });
+  }
+});
+
 //POST method for creating a transaction
 router.post("/", async (req: Request, res: Response) => {
   const { userId, accountId, amount, type, description, category, date } = req.body;
