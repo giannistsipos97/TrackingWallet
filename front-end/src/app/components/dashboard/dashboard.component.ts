@@ -1,13 +1,13 @@
-import { Component, inject, OnInit, signal, computed } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
 import { User } from '../../models/User';
-import { AccountService } from '../../services/account.service';
 import { CommonModule } from '@angular/common';
 import { Account } from '../../models/Account';
 import { AddAccountDialogComponent } from '../add-account-dialog/add-account-dialog.component';
 import { AddTransactionDialogComponent } from '../add-transaction-dialog/add-transaction-dialog.component';
 import { Router } from '@angular/router';
 import { HeaderService } from '../../services/header.service';
+import { AccountsStore } from '../../stores/accounts.store';
 
 @Component({
   selector: 'app-dashboard',
@@ -22,14 +22,14 @@ import { HeaderService } from '../../services/header.service';
 })
 export class DashboardComponent implements OnInit {
   authService = inject(AuthService);
-  accountService = inject(AccountService);
+  accountsStore = inject(AccountsStore);
   router = inject(Router);
   headerService = inject(HeaderService);
 
   userProfile = signal<User | null>(null);
   selectedAccount = signal<Account | null>(null);
   isModalOpen = signal(false);
-  accounts = signal<Account[]>([]);
+  accounts = this.accountsStore.accounts;
   transactionModalOpen = signal(false);
   activeTransactionType = signal<'income' | 'expense'>('expense');
   transactionAccount = signal<Account | null>(null);
@@ -52,12 +52,7 @@ export class DashboardComponent implements OnInit {
   }
 
   loadAccounts() {
-    this.accountService.getAccounts().subscribe((accounts) => {
-      this.accounts.set(accounts);
-      // if (accounts.length > 0 && !this.selectedAccount()) {
-      //   this.selectedAccount.set(accounts[0]);
-      // }
-    });
+    this.accountsStore.loadAccounts();
   }
 
   openAddAccountDialog() {
@@ -71,9 +66,7 @@ export class DashboardComponent implements OnInit {
   }
 
   updateBalance(updatedAccount: Account) {
-    this.accounts.update((accs) =>
-      accs.map((a) => (a._id === updatedAccount._id ? updatedAccount : a)),
-    );
+    this.accountsStore.updateAccount(updatedAccount);
 
     if (this.selectedAccount()?._id === updatedAccount._id) {
       this.selectedAccount.set(updatedAccount);
@@ -86,7 +79,7 @@ export class DashboardComponent implements OnInit {
 
   updateData() {
     this.isModalOpen.set(false);
-    this.loadAccounts();
+    this.accountsStore.loadAccounts(true);
   }
 
   logout() {

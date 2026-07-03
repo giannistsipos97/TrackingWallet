@@ -1,6 +1,5 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AccountService } from '../../services/account.service';
 import { Account } from '../../models/Account';
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { Transaction } from '../../models/Transaction';
@@ -9,11 +8,11 @@ import { HeaderService } from '../../services/header.service';
 import { EditTransactionComponent } from '../edit-transaction/edit-transaction.component';
 import { CategoryService } from '../../services/category.service';
 import { Category } from '../../models/Category';
-import { TransactionService } from '../../services/transaction.service';
 import { ViewAllTransactionsComponent } from '../view-all-transactions/view-all-transactions.component';
 import { TransactionListComponent } from '../transaction-list/transaction-list.component';
 import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
 import { AddTransactionDialogComponent } from '../add-transaction-dialog/add-transaction-dialog.component';
+import { AccountsStore } from '../../stores/accounts.store';
 
 @Component({
   selector: 'app-account-details',
@@ -34,14 +33,13 @@ import { AddTransactionDialogComponent } from '../add-transaction-dialog/add-tra
 export class AccountDetailsComponent implements OnInit {
   route = inject(ActivatedRoute);
   router = inject(Router);
-  accountService = inject(AccountService);
+  accountsStore = inject(AccountsStore);
   headerService = inject(HeaderService);
   categoriesService = inject(CategoryService);
-  transactionService = inject(TransactionService);
 
-  account = signal<Account | null>(null);
-  transactions = signal<Transaction[]>([]);
-  summary = signal<any | null>(null);
+  account = this.accountsStore.selectedAccount;
+  transactions = this.accountsStore.selectedAccountTransactions;
+  summary = this.accountsStore.selectedAccountSummary;
   showEditModal = signal(false);
   editTransaction = signal<Transaction | null>(null);
   allCategories = signal<Category[]>([]);
@@ -65,20 +63,16 @@ export class AccountDetailsComponent implements OnInit {
   }
 
   loadDetails(id: string) {
-    this.accountService.getAccountById(id).subscribe((data) => {
-      this.account.set(data.account);
-      this.transactions.set(data.transactions);
-      this.summary.set(data.summary);
-    });
+    this.accountsStore.loadAccountDetails(id);
   }
 
   handleBalanceUpdate(account: Account) {
     this.showEditModal.set(false);
-    this.account.set(account);
+    this.accountsStore.updateAccount(account);
   }
 
   openAddTransactionModal(type: 'income' | 'expense'): void {
-    this.activeTransactionType = signal<'income' | 'expense'>(type);
+    this.activeTransactionType.set(type);
     this.isAddModalOpen.set(true);
   }
 
@@ -95,7 +89,7 @@ export class AccountDetailsComponent implements OnInit {
     this.editTransaction.set(null);
 
     if (response?.account) {
-      this.account.set(response.account);
+      this.accountsStore.updateAccount(response.account);
     }
 
     const id = this.route.snapshot.paramMap.get('id');
@@ -112,7 +106,7 @@ export class AccountDetailsComponent implements OnInit {
       return;
     }
 
-    this.accountService.deleteAccount(currentAccount._id).subscribe({
+    this.accountsStore.deleteAccount(currentAccount._id).subscribe({
       next: () => {
         this.router.navigate(['/dashboard']);
       },
