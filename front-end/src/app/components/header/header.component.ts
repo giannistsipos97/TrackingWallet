@@ -1,5 +1,4 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
-import { Router } from '@angular/router';
 import { HeaderService } from '../../services/header.service';
 import { ThemeService } from '../../services/theme.service';
 import { AuthService } from '../../services/auth.service';
@@ -15,7 +14,6 @@ export class HeaderComponent implements OnInit {
   authService = inject(AuthService);
   headerService = inject(HeaderService);
   themeService = inject(ThemeService);
-  router = inject(Router);
 
   userProfile = signal<User | null>(null);
 
@@ -31,8 +29,6 @@ export class HeaderComponent implements OnInit {
     return firstLetter + secondLetter;
   });
 
-  isDashboard = computed(() => this.router.url === '/dashboard');
-
   ngOnInit() {
     this.getUserProfile();
   }
@@ -41,8 +37,7 @@ export class HeaderComponent implements OnInit {
     this.authService.getUserProfile().subscribe({
       next: (profile) => {
         this.userProfile.set(profile);
-
-        this.headerService.updateHeader('Welcome back,', profile.name);
+        this.headerService.setProfileName(profile.name);
       },
       error: (err) => {
         console.error('Error fetching profile:', err);

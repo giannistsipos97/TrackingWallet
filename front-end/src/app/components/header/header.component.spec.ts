@@ -34,6 +34,7 @@ describe('HeaderComponent', () => {
       title: signal('Dynamic Dashboard Header'),
       subtitle: signal('Overview metrics'),
       updateHeader: jasmine.createSpy('updateHeader'),
+      setProfileName: jasmine.createSpy('setProfileName'),
       toggleDrawer: jasmine.createSpy('toggleDrawer'),
     };
 

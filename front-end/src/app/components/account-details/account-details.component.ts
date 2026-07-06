@@ -1,10 +1,10 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Account } from '../../models/Account';
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { Transaction } from '../../models/Transaction';
 import { EditBalanceModalComponent } from '../edit-balance-modal/edit-balance-modal.component';
-import { HeaderService } from '../../services/header.service';
 import { EditTransactionComponent } from '../edit-transaction/edit-transaction.component';
 import { CategoryService } from '../../services/category.service';
 import { Category } from '../../models/Category';
@@ -33,8 +33,8 @@ import { AccountsStore } from '../../stores/accounts.store';
 export class AccountDetailsComponent implements OnInit {
   route = inject(ActivatedRoute);
   router = inject(Router);
+  destroyRef = inject(DestroyRef);
   accountsStore = inject(AccountsStore);
-  headerService = inject(HeaderService);
   categoriesService = inject(CategoryService);
 
   account = this.accountsStore.selectedAccount;
@@ -49,17 +49,18 @@ export class AccountDetailsComponent implements OnInit {
   activeTransactionType = signal<'income' | 'expense'>('expense');
 
   ngOnInit() {
-    this.headerService.updateHeader(
-      'Account Details',
-      'View your activity and balance',
-    );
     this.categoriesService.getCategories().subscribe((categories) => {
       this.allCategories.set(categories);
     });
-    const id = this.route.snapshot.paramMap.get('id');
-    if (id) {
-      this.loadDetails(id);
-    }
+
+    this.route.paramMap
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((params) => {
+        const id = params.get('id');
+        if (id) {
+          this.loadDetails(id);
+        }
+      });
   }
 
   loadDetails(id: string) {

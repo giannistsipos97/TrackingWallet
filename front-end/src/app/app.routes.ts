@@ -22,9 +22,37 @@ export const routes: Routes = [
     component: LayoutComponent,
     canActivate: [authGuard],
     children: [
-      { path: 'dashboard', component: DashboardComponent },
-      { path: 'analytics', component: AnalyticsComponent },
-      { path: 'account/:id', component: AccountDetailsComponent },
+      {
+        path: 'dashboard',
+        component: DashboardComponent,
+        data: {
+          header: {
+            title: 'Welcome back,',
+            subtitle: 'Dashboard',
+            useProfileNameAsSubtitle: true,
+          },
+        },
+      },
+      {
+        path: 'analytics',
+        component: AnalyticsComponent,
+        data: {
+          header: {
+            title: 'Analytics',
+            subtitle: 'View your analytics and insights',
+          },
+        },
+      },
+      {
+        path: 'account/:id',
+        component: AccountDetailsComponent,
+        data: {
+          header: {
+            title: 'Account Details',
+            subtitle: 'View your activity and balance',
+          },
+        },
+      },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
     ],
   },

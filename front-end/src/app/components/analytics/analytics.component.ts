@@ -6,7 +6,6 @@ import { Chart, registerables } from 'chart.js';
 import { Transaction } from '../../models/Transaction';
 import { Account } from '../../models/Account';
 import { AccountService } from '../../services/account.service';
-import { HeaderService } from '../../services/header.service';
 
 Chart.register(...registerables);
 
@@ -19,7 +18,6 @@ Chart.register(...registerables);
 })
 export class AnalyticsComponent implements OnInit {
   private accountService = inject(AccountService);
-  headerService = inject(HeaderService);
 
   transactions = signal<Transaction[]>([]);
   accounts = signal<Account[]>([]);
@@ -66,10 +64,6 @@ export class AnalyticsComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.headerService.updateHeader(
-      'Analytics',
-      'View your analytics and insights',
-    );
     this.accountService.getAccounts().subscribe({
       next: (fetchedAccounts: Account[]) => {
         this.accounts.set(fetchedAccounts);
