@@ -1,12 +1,9 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { AuthService } from '../../services/auth.service';
-import { User } from '../../models/User';
 import { CommonModule } from '@angular/common';
 import { Account } from '../../models/Account';
 import { AddAccountDialogComponent } from '../add-account-dialog/add-account-dialog.component';
 import { AddTransactionDialogComponent } from '../add-transaction-dialog/add-transaction-dialog.component';
 import { Router } from '@angular/router';
-import { HeaderService } from '../../services/header.service';
 import { AccountsStore } from '../../stores/accounts.store';
 
 @Component({
@@ -21,12 +18,9 @@ import { AccountsStore } from '../../stores/accounts.store';
   styleUrl: './dashboard.component.scss',
 })
 export class DashboardComponent implements OnInit {
-  authService = inject(AuthService);
   accountsStore = inject(AccountsStore);
   router = inject(Router);
-  headerService = inject(HeaderService);
 
-  userProfile = signal<User | null>(null);
   selectedAccount = signal<Account | null>(null);
   isModalOpen = signal(false);
   accounts = this.accountsStore.accounts;
@@ -35,20 +29,7 @@ export class DashboardComponent implements OnInit {
   transactionAccount = signal<Account | null>(null);
 
   ngOnInit() {
-    this.getUserProfile();
     this.loadAccounts();
-  }
-
-  getUserProfile() {
-    this.authService.getUserProfile().subscribe({
-      next: (profile) => {
-        this.headerService.updateHeader('Welcome back,', profile.name);
-      },
-      error: (err) => {
-        console.error('Error fetching profile:', err);
-        if (err.status === 401) this.authService.logout();
-      },
-    });
   }
 
   loadAccounts() {
@@ -80,9 +61,5 @@ export class DashboardComponent implements OnInit {
   updateData() {
     this.isModalOpen.set(false);
     this.accountsStore.loadAccounts(true);
-  }
-
-  logout() {
-    this.authService.logout();
   }
 }

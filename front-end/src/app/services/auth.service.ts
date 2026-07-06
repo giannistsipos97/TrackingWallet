@@ -1,7 +1,7 @@
 import { Injectable, signal, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { BehaviorSubject, Observable, of } from 'rxjs';
+import { finalize, shareReplay, tap } from 'rxjs/operators';
 import { User } from '../models/User';
 import { Router } from '@angular/router';
 
@@ -12,6 +12,7 @@ export class AuthService {
   private http = inject(HttpClient);
   private router = inject(Router);
   private apiUrl = 'http://localhost:3000/api/auth';
+  private profileRequest$?: Observable<User>;
 
   // 1. The BehaviorSubject: Holds the "Source of Truth"
   // It starts with null, but as soon as someone subscribes, they get the latest value.
@@ -37,18 +38,33 @@ export class AuthService {
       .pipe(tap((response) => this.saveSession(response)));
   }
 
-  getUserProfile(): Observable<User> {
-    return this.http.get<User>(`${this.apiUrl}/me`).pipe(
-      tap((user) => {
-        // Update both the Subject and the Signal
-        this.userSubject.next(user);
-        this.currentUser.set(user);
-      }),
-    );
+  getUserProfile(forceRefresh = false): Observable<User> {
+    const cachedUser = this.currentUser();
+
+    if (cachedUser && !forceRefresh) {
+      return of(cachedUser);
+    }
+
+    if (!this.profileRequest$ || forceRefresh) {
+      this.profileRequest$ = this.http.get<User>(`${this.apiUrl}/me`).pipe(
+        tap((user) => {
+          // Update both the Subject and the Signal
+          this.userSubject.next(user);
+          this.currentUser.set(user);
+        }),
+        finalize(() => {
+          this.profileRequest$ = undefined;
+        }),
+        shareReplay(1),
+      );
+    }
+
+    return this.profileRequest$;
   }
 
   private saveSession(response: any) {
     localStorage.setItem('token', response.token);
+    this.userSubject.next(response.user);
     this.currentUser.set(response.user);
     this.isAuthenticated.set(true);
   }
