@@ -58,13 +58,13 @@ export class AccountDetailsComponent implements OnInit {
       .subscribe((params) => {
         const id = params.get('id');
         if (id) {
-          this.loadDetails(id);
+          this.loadDetails(id, true);
         }
       });
   }
 
-  loadDetails(id: string) {
-    this.accountsStore.loadAccountDetails(id);
+  loadDetails(id: string, clearExisting = false) {
+    this.accountsStore.loadAccountDetails(id, clearExisting);
   }
 
   handleBalanceUpdate(account: Account) {
@@ -79,7 +79,7 @@ export class AccountDetailsComponent implements OnInit {
 
   closeAddTransactionModal() {
     this.isAddModalOpen.set(false);
-    this.loadDetails(this.account()!._id!);
+    this.loadDetails(this.account()!._id!, false);
   }
 
   openEditTransaction(transaction: any) {
@@ -95,7 +95,7 @@ export class AccountDetailsComponent implements OnInit {
 
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
-      this.loadDetails(id);
+      this.loadDetails(id, false);
     }
   }
 

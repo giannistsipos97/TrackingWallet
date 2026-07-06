@@ -50,7 +50,10 @@ export const AccountsStore = signalStore(
   withComputed(({ accounts }) => ({
     hasAccounts: computed(() => accounts().length > 0),
   })),
-  withMethods((store, accountService = inject(AccountService)) => ({
+  withMethods((store, accountService = inject(AccountService)) => {
+    let latestDetailsRequestId = 0;
+
+    return {
     loadAccounts(force = false): void {
       if (!force && store.accountsLoaded()) {
         return;
@@ -74,11 +77,27 @@ export const AccountsStore = signalStore(
         },
       });
     },
-    loadAccountDetails(accountId: string): void {
-      patchState(store, { detailsLoading: true, detailsError: null });
+    loadAccountDetails(accountId: string, clearExisting = true): void {
+      const requestId = ++latestDetailsRequestId;
+
+      patchState(store, {
+        selectedAccount: clearExisting ? null : store.selectedAccount(),
+        selectedAccountTransactions: clearExisting
+          ? []
+          : store.selectedAccountTransactions(),
+        selectedAccountSummary: clearExisting
+          ? null
+          : store.selectedAccountSummary(),
+        detailsLoading: true,
+        detailsError: null,
+      });
 
       accountService.getAccountById(accountId).subscribe({
         next: ({ account, transactions, summary }) => {
+          if (requestId !== latestDetailsRequestId) {
+            return;
+          }
+
           patchState(store, {
             selectedAccount: account,
             selectedAccountTransactions: transactions,
@@ -87,6 +106,10 @@ export const AccountsStore = signalStore(
           });
         },
         error: () => {
+          if (requestId !== latestDetailsRequestId) {
+            return;
+          }
+
           patchState(store, {
             detailsLoading: false,
             detailsError: 'Failed to load account details',
@@ -139,5 +162,6 @@ export const AccountsStore = signalStore(
             : state.selectedAccount,
       }));
     },
-  })),
+    };
+  }),
 );
