@@ -4,6 +4,7 @@ import { authMiddleware } from "../middleware/auth"; // Ensure this path is corr
 import { Account } from "../models/Account";
 import { Transaction } from "../models/Transaction";
 import mongoose from "mongoose";
+import { isNonNegativeNumber, isValidObjectId } from "../utils/validation";
 
 const router = Router();
 
@@ -14,22 +15,36 @@ router.post("/", authMiddleware, createAccount);
 router.get("/", authMiddleware, getAccounts);
 
 //GET /api/accounts/:id
-router.get("/:id", async (req, res) => {
+router.get("/:id", authMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
+    const userId = req.user?.id;
+
+    if (!isValidObjectId(id)) {
+      return res.status(400).json({ message: "Invalid account id" });
+    }
+
+    if (!userId) {
+      return res.status(401).json({ message: "User not identified" });
+    }
 
     // 1. Fetch the account info
-    const account = await Account.findById(id);
+    const account = await Account.findOne({ _id: id, userId });
     if (!account) return res.status(404).json({ message: "Account not found" });
 
     // 2. Fetch the actual transactions
-    const transactions = await Transaction.find({ accountId: id })
+    const transactions = await Transaction.find({ accountId: id, userId })
       .populate("category") // Ensure categories are visible
       .sort({ date: -1 })
       .limit(5);
 
     const totals = await Transaction.aggregate([
-      { $match: { accountId: new mongoose.Types.ObjectId(id) } },
+      {
+        $match: {
+          accountId: new mongoose.Types.ObjectId(id),
+          userId: new mongoose.Types.ObjectId(userId),
+        },
+      },
       {
         $group: {
           _id: "$type",
@@ -50,13 +65,31 @@ router.get("/:id", async (req, res) => {
 });
 
 // PUT /api/accounts/updateBalance/:id
-router.put("/updateBalance/:id", async (req, res) => {
+router.put("/updateBalance/:id", authMiddleware, async (req, res) => {
   try {
-    const updatedAccount = await Account.findByIdAndUpdate(
-      req.params.id,
+    const userId = req.user?.id;
+    const accountId = req.params.id;
+
+    if (!userId) {
+      return res.status(401).json({ message: "User not identified" });
+    }
+
+    if (!isValidObjectId(accountId)) {
+      return res.status(400).json({ message: "Invalid account id" });
+    }
+
+    if (!isNonNegativeNumber(req.body.balance)) {
+      return res.status(400).json({ message: "Balance must be a non-negative number" });
+    }
+
+    const updatedAccount = await Account.findOneAndUpdate(
+      { _id: accountId, userId },
       { balance: req.body.balance },
       { new: true }, // Returns the updated document instead of the old one
     );
+
+    if (!updatedAccount) return res.status(404).json({ message: "Account not found" });
+
     res.json(updatedAccount);
   } catch (err) {
     res.status(500).json({ message: "Database update failed" });
@@ -73,9 +106,17 @@ router.delete("/:id", authMiddleware, async (req, res) => {
     if (!userId) {
       return res.status(401).json({ message: "User not identified" });
     }
-    await Transaction.deleteMany({ accountId: accountId });
 
-    await Account.findByIdAndDelete(accountId);
+    if (!isValidObjectId(accountId)) {
+      return res.status(400).json({ message: "Invalid account id" });
+    }
+
+    const account = await Account.findOne({ _id: accountId, userId });
+    if (!account) return res.status(404).json({ message: "Account not found" });
+
+    await Transaction.deleteMany({ accountId, userId });
+
+    await Account.deleteOne({ _id: accountId, userId });
 
     res.json({ message: "Account and all associated transactions deleted successfully" });
   } catch (error: any) {

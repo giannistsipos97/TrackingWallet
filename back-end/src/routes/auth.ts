@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { User } from "../models/User";
 import { authMiddleware } from "../middleware/auth";
+import { isNonEmptyString, isValidEmail } from "../utils/validation";
 
 const router = express.Router();
 
@@ -10,7 +11,21 @@ const router = express.Router();
 router.post("/signup", async (req, res) => {
   try {
     const { name, email, password } = req.body;
-    const userExists = await User.findOne({ email });
+
+    if (!isNonEmptyString(name)) {
+      return res.status(400).json({ message: "Name is required" });
+    }
+
+    if (!isValidEmail(email)) {
+      return res.status(400).json({ message: "Valid email is required" });
+    }
+
+    if (!isNonEmptyString(password) || password.length < 6) {
+      return res.status(400).json({ message: "Password must be at least 6 characters" });
+    }
+
+    const normalizedEmail = email.toLowerCase();
+    const userExists = await User.findOne({ email: normalizedEmail });
     if (userExists)
       return res.status(400).json({ message: "User already exists" });
 
@@ -18,8 +33,8 @@ router.post("/signup", async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, salt);
 
     const newUser = await User.create({
-      name,
-      email,
+      name: name.trim(),
+      email: normalizedEmail,
       password: hashedPassword,
     });
 
@@ -42,12 +57,17 @@ router.post("/signup", async (req, res) => {
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
-    const foundUser = await User.findOne({ email });
-    if (!foundUser) return res.status(400).json({ message: "User not found" });
+
+    if (!isValidEmail(email) || !isNonEmptyString(password)) {
+      return res.status(400).json({ message: "Invalid email or password" });
+    }
+
+    const foundUser = await User.findOne({ email: email.toLowerCase() });
+    if (!foundUser) return res.status(400).json({ message: "Invalid email or password" });
 
     const isMatch = await bcrypt.compare(password, foundUser.password);
     if (!isMatch)
-      return res.status(400).json({ message: "Invalid credentials" });
+      return res.status(400).json({ message: "Invalid email or password" });
 
     const token = jwt.sign(
       { userId: foundUser._id },
@@ -64,8 +84,12 @@ router.post("/login", async (req, res) => {
   }
 });
 
-router.get("/me", authMiddleware, async (req: any, res) => {
+router.get("/me", authMiddleware, async (req, res) => {
   try {
+    if (!req.user) {
+      return res.status(401).json({ message: "User not authenticated" });
+    }
+
     const user = await User.findById(req.user.id).select("-password");
 
     if (!user) {
