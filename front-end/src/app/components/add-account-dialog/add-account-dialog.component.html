@@ -1,8 +1,8 @@
 <div
-  class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm"
+  class="app-modal-backdrop z-50"
 >
   <div
-    class="bg-white dark:bg-slate-800 w-full max-w-md rounded-[2.5rem] p-8 shadow-2xl animate-in fade-in zoom-in duration-300"
+    class="app-modal-panel p-8 animate-in fade-in zoom-in duration-300"
   >
     <div class="flex justify-between items-center mb-8">
       <h3 class="text-2xl font-black text-slate-900 dark:text-white">
@@ -10,27 +10,27 @@
       </h3>
       <button
         (click)="close.emit()"
-        class="fas fa-times text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+        class="fas fa-times app-icon-button rounded-xl p-2"
       ></button>
     </div>
 
     <form [formGroup]="accountForm" (ngSubmit)="onSubmit()" class="space-y-6">
       <div>
         <label
-          class="block text-xs font-bold uppercase tracking-widest text-slate-500 mb-2"
+          class="app-label"
           >Account Name</label
         >
         <input
           type="text"
           formControlName="name"
           placeholder="e.g. Main Savings"
-          class="w-full bg-slate-50 dark:bg-slate-900 border-none rounded-2xl p-4 focus:ring-2 focus:ring-emerald-500 dark:text-white transition-all"
+          class="app-input"
         />
       </div>
 
       <div>
         <label
-          class="block text-xs font-bold uppercase tracking-widest text-slate-500 mb-2"
+          class="app-label"
           >Initial Balance</label
         >
         <div class="relative">
@@ -41,14 +41,14 @@
           <input
             type="number"
             formControlName="balance"
-            class="w-full bg-slate-50 dark:bg-slate-900 border-none rounded-2xl p-4 pl-10 focus:ring-2 focus:ring-emerald-500 dark:text-white transition-all"
+          class="app-input pl-10"
           />
         </div>
       </div>
 
       <div class="space-y-4">
         <label
-          class="block text-xs font-bold uppercase tracking-[0.2em] text-slate-400"
+          class="app-label tracking-[0.2em]"
         >
           Choose Style
         </label>
@@ -75,14 +75,14 @@
         <button
           type="button"
           (click)="close.emit()"
-          class="flex-1 py-4 font-bold text-slate-500 hover:text-slate-700 transition-colors"
+          class="app-button-ghost flex-1 py-4"
         >
           Cancel
         </button>
         <button
           type="submit"
           [disabled]="accountForm.invalid"
-          class="flex-1 bg-emerald-500 hover:bg-emerald-600 disabled:opacity-50 disabled:cursor-not-allowed text-white py-4 rounded-2xl font-bold shadow-lg shadow-emerald-500/20 transition-all active:scale-95"
+          class="app-button-primary flex-1 py-4"
         >
           Create Account
         </button>

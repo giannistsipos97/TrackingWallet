@@ -1,5 +1,5 @@
 <div
-  class="p-6 bg-slate-50 dark:bg-slate-900 min-h-full transition-colors duration-200"
+  class="app-page p-6 duration-200"
 >
   <div class="max-w-6xl mx-auto">
     <div
@@ -20,7 +20,7 @@
         <div class="flex flex-col sm:flex-row sm:items-center gap-2">
           <label
             for="accountSelect"
-            class="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500"
+            class="app-label mb-0 tracking-wider text-slate-400 dark:text-slate-500"
           >
             Account:
           </label>
@@ -29,7 +29,7 @@
               id="accountSelect"
               [ngModel]="selectedAccountId()"
               (ngModelChange)="onAccountChange($event)"
-              class="w-full bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 text-sm font-bold rounded-xl pl-4 pr-10 py-2.5 shadow-sm border border-slate-200/60 dark:border-slate-700/80 hover:border-slate-300 dark:hover:border-slate-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 appearance-none cursor-pointer transition-all duration-200"
+              class="app-input-bordered cursor-pointer appearance-none rounded-xl py-2.5 pl-4 pr-10 text-sm font-bold focus:border-emerald-500 focus:ring-emerald-500/20"
             >
               @for (acc of accounts(); track acc._id) {
                 <option
@@ -46,7 +46,7 @@
         <div class="flex flex-col sm:flex-row sm:items-center gap-2">
           <label
             for="yearSelect"
-            class="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500"
+            class="app-label mb-0 tracking-wider text-slate-400 dark:text-slate-500"
           >
             Year:
           </label>
@@ -55,7 +55,7 @@
               id="yearSelect"
               [ngModel]="selectedYear()"
               (ngModelChange)="selectedYear.set($event)"
-              class="w-full bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 text-sm font-bold rounded-xl pl-4 pr-10 py-2.5 shadow-sm border border-slate-200/60 dark:border-slate-700/80 hover:border-slate-300 dark:hover:border-slate-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 appearance-none cursor-pointer transition-all duration-200"
+              class="app-input-bordered cursor-pointer appearance-none rounded-xl py-2.5 pl-4 pr-10 text-sm font-bold focus:border-emerald-500 focus:ring-emerald-500/20"
             >
               @for (year of availableYears(); track year) {
                 <option
@@ -88,7 +88,7 @@
         <div class="flex flex-col sm:flex-row sm:items-center gap-2">
           <label
             for="monthSelect"
-            class="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500"
+            class="app-label mb-0 tracking-wider text-slate-400 dark:text-slate-500"
           >
             Month:
           </label>
@@ -97,7 +97,7 @@
               id="monthSelect"
               [ngModel]="activePeriod()"
               (ngModelChange)="selectedMonth.set($event.split('-')[1])"
-              class="w-full bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 text-sm font-bold rounded-xl pl-4 pr-10 py-2.5 shadow-sm border border-slate-200/60 dark:border-slate-700/80 hover:border-slate-300 dark:hover:border-slate-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 appearance-none cursor-pointer transition-all duration-200"
+              class="app-input-bordered cursor-pointer appearance-none rounded-xl py-2.5 pl-4 pr-10 text-sm font-bold focus:border-emerald-500 focus:ring-emerald-500/20"
             >
               @for (month of availableMonths(); track month) {
                 <option
@@ -131,7 +131,7 @@
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <div
-        class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700/50"
+        class="app-card rounded-2xl dark:border-slate-700/50"
       >
         <div class="mb-4">
           <h3 class="text-base font-bold text-slate-800 dark:text-slate-200">
@@ -152,7 +152,7 @@
       </div>
 
       <div
-        class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700/50"
+        class="app-card rounded-2xl dark:border-slate-700/50"
       >
         <div class="mb-4">
           <h3 class="text-base font-bold text-slate-800 dark:text-slate-200">

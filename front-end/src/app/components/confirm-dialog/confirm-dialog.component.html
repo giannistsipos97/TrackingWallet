@@ -1,5 +1,5 @@
 <div
-  class="fixed inset-0 z-[1000] flex items-center justify-center bg-slate-900/50 backdrop-blur-sm"
+  class="fixed inset-0 z-confirm flex items-center justify-center bg-slate-900/50 backdrop-blur-sm"
 >
   <div
     class="bg-white dark:bg-slate-800 p-8 rounded-3xl shadow-xl max-w-sm w-full border border-slate-200 dark:border-slate-700"
@@ -13,13 +13,13 @@
     <div class="flex gap-4">
       <button
         (click)="no.emit()"
-        class="flex-1 py-3 font-bold text-slate-500 bg-slate-100 dark:bg-slate-700 rounded-xl hover:bg-slate-200 transition-colors"
+        class="app-button-secondary flex-1 rounded-xl py-3"
       >
         No
       </button>
       <button
         (click)="yes.emit()"
-        class="flex-1 py-3 font-bold text-white bg-emerald-500 rounded-xl hover:bg-emerald-600 transition-colors"
+        class="app-button-primary flex-1 rounded-xl py-3"
       >
         Yes
       </button>

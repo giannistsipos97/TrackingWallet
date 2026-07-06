@@ -1,8 +1,8 @@
 <div
-  class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4"
+  class="app-modal-backdrop z-modal"
 >
   <div
-    class="bg-white dark:bg-slate-800 w-full max-w-md rounded-[2.5rem] p-8 shadow-2xl border border-slate-100 dark:border-slate-700"
+    class="app-modal-panel-bordered p-8"
   >
     <div class="flex items-center justify-between mb-6">
       <div class="flex items-center gap-3">
@@ -15,7 +15,7 @@
           [ngClass]="{
             'bg-emerald-500 text-white border-emerald-500': !isReadOnly(),
           }"
-          class="w-8 h-8 flex items-center justify-center rounded-xl border border-slate-200 dark:border-slate-700 text-slate-400 hover:text-emerald-500 transition-all active:scale-90"
+          class="app-icon-button h-8 w-8 rounded-xl border border-slate-200 active:scale-90 dark:border-slate-700 hover:text-emerald-500"
         >
           <i class="fa-solid fa-pen text-[10px]"></i>
         </button>
@@ -23,14 +23,14 @@
         <button
           (click)="isDeleting.set(true)"
           type="button"
-          class="w-8 h-8 flex items-center justify-center rounded-xl border border-slate-200 dark:border-slate-700 text-slate-400 hover:text-red-500 transition-all active:scale-90"
+          class="app-icon-button h-8 w-8 rounded-xl border border-slate-200 active:scale-90 dark:border-slate-700 hover:text-red-500"
         >
           <i class="fa-solid fa-trash-can text-[10px]"></i>
         </button>
       </div>
       <button
         (click)="close.emit()"
-        class="text-slate-400 hover:text-slate-600 transition-colors"
+        class="app-icon-button rounded-xl p-2"
       >
         <i class="fa-solid fa-xmark text-xl"></i>
       </button>
@@ -39,7 +39,7 @@
     <form [formGroup]="editForm" class="space-y-4">
       <div class="space-y-2">
         <label
-          class="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500 block"
+          class="app-label tracking-[0.2em] text-slate-400 dark:text-slate-500"
         >
           Transaction Type
         </label>
@@ -90,7 +90,7 @@
 
       <div>
         <label
-          class="text-xs font-bold uppercase tracking-widest text-slate-500 mb-2 block"
+          class="app-label"
           >Description</label
         >
         <input
@@ -98,14 +98,14 @@
           type="text"
           [readonly]="isReadOnly()"
           [ngClass]="{ 'opacity-60 cursor-not-allowed': isReadOnly() }"
-          class="w-full bg-slate-100 dark:bg-slate-900 dark:text-white text-black border-2 border-transparent focus:border-emerald-500 rounded-2xl p-4 font-semibold outline-none transition-all"
+          class="app-input-muted font-semibold"
         />
       </div>
 
       <div class="grid grid-cols-2 gap-4">
         <div>
           <label
-            class="text-xs font-bold uppercase tracking-widest text-slate-500 mb-2 block"
+            class="app-label"
             >Amount (€)</label
           >
           <input
@@ -114,12 +114,12 @@
             step="0.01"
             [readonly]="isReadOnly()"
             [ngClass]="{ 'opacity-60 cursor-not-allowed': isReadOnly() }"
-            class="w-full bg-slate-100 dark:bg-slate-900 dark:text-white text-black border-2 border-transparent focus:border-emerald-500 rounded-2xl p-4 font-bold outline-none transition-all"
+            class="app-input-muted font-bold"
           />
         </div>
         <div>
           <label
-            class="text-xs font-bold uppercase tracking-widest text-slate-500 mb-2 block"
+            class="app-label"
             >Date</label
           >
           <input
@@ -127,14 +127,14 @@
             type="date"
             [readonly]="isReadOnly()"
             [ngClass]="{ 'opacity-60 cursor-not-allowed': isReadOnly() }"
-            class="w-full bg-slate-100 dark:bg-slate-900 dark:text-white text-black border-2 border-transparent focus:border-emerald-500 rounded-2xl p-4 font-semibold outline-none transition-all"
+            class="app-input-muted font-semibold"
           />
         </div>
       </div>
 
       <div>
         <label
-          class="text-xs font-bold uppercase tracking-widest text-slate-500 mb-2 block"
+          class="app-label"
           >Category</label
         >
         <div class="relative">
@@ -142,7 +142,7 @@
             formControlName="category"
             [attr.disabled]="isReadOnly() ? true : null"
             [ngClass]="{ 'opacity-60 cursor-not-allowed': isReadOnly() }"
-            class="w-full bg-slate-100 dark:bg-slate-900 dark:text-white text-black border-2 border-transparent focus:border-emerald-500 rounded-2xl p-4 font-semibold outline-none transition-all appearance-none cursor-pointer"
+            class="app-input-muted cursor-pointer appearance-none font-semibold"
           >
             <option *ngFor="let cat of categories" [value]="cat._id">
               {{ cat.name }}
@@ -162,7 +162,7 @@
         <button
           type="button"
           (click)="close.emit()"
-          class="p-4 rounded-2xl font-bold bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 transition-colors cursor-pointer"
+          class="app-button-secondary cursor-pointer p-4"
         >
           {{ isReadOnly() ? "Close" : "Cancel" }}
         </button>
@@ -172,7 +172,7 @@
             type="submit"
             (click)="onSave()"
             [disabled]="editForm.invalid"
-            class="p-4 rounded-2xl font-bold bg-emerald-500 text-white hover:bg-emerald-600 shadow-lg shadow-emerald-500/20 transition-all active:scale-95 disabled:opacity-50 cursor-pointer"
+            class="app-button-primary cursor-pointer p-4"
           >
             Save Changes
           </button>
